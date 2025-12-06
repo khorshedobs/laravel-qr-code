@@ -1,5 +1,5 @@
 {
-    "name": "rssoftbd/laravel-qr-code",
+    "name": "khorshedobs/laravel-qr-code",
     "description": "QR Code Generator for Laravel",
     "keywords": ["qrcode", "laravel", "generator"],
     "license": "MIT",
