@@ -14,7 +14,7 @@ class QrCodeServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('qr-code', function () {
+        $this->app->bind('qrcode', function () {
             return new QrGenerator();
         });
     }

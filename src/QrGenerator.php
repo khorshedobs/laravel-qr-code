@@ -7,6 +7,7 @@ use RSSoftBD\QrCode\Support\Image;
 use RSSoftBD\QrCode\Support\ImageHandler;
 use RSSoftBD\QrCode\Support\PayloadRegistry;
 use RSSoftBD\QrCode\Support\StyleRegistry;
+use RSSoftBD\QrCode\Support\FrameRegistry;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Encoder\Encoder;
 use BaconQrCode\Exception\WriterException;
@@ -130,6 +131,13 @@ class QrGenerator
     protected float $overlayImageScale = 0.2;
 
     /**
+     * The frame style to apply.
+     *
+     * @var string|null
+     */
+    protected ?string $frame = null;
+
+    /**
      * Magic method to handle payload creation calls.
      *
      * @param string $method
@@ -165,6 +173,10 @@ class QrGenerator
         if ($this->overlayImageContent !== null && $this->outputFormat === 'png') {
             $merger = new ImageHandler(new Image($qrCodeData), new Image($this->overlayImageContent));
             $qrCodeData = $merger->merge($this->overlayImageScale);
+        }
+
+        if ($this->frame && $this->outputFormat === 'svg') {
+            $qrCodeData = FrameRegistry::getFrame($this->frame, $qrCodeData, $this->sizeInPixels);
         }
 
         if ($filename) {
@@ -525,5 +537,45 @@ class QrGenerator
         }
 
         return new $class();
+    }
+    public function size(int $pixels): self
+    {
+        return $this->setDimensions($pixels);
+    }
+
+    public function color(int $red, int $green, int $blue, ?int $alpha = null): self
+    {
+        return $this->setForegroundColor($red, $green, $blue, $alpha);
+    }
+
+    public function backgroundColor(int $red, int $green, int $blue, ?int $alpha = null): self
+    {
+        return $this->setBackgroundColor($red, $green, $blue, $alpha);
+    }
+
+    public function margin(int $margin): self
+    {
+        return $this->setMargin($margin);
+    }
+
+    public function style(string $style, float $size = 0.5): self
+    {
+        return $this->setModuleStyle($style, $size);
+    }
+
+    public function eye(string $style): self
+    {
+        return $this->setEyeStyle($style);
+    }
+
+    public function generate(string $content, ?string $filename = null)
+    {
+        return $this->render($content, $filename);
+    }
+
+    public function frame(string $style): self
+    {
+        $this->frame = $style;
+        return $this;
     }
 }
